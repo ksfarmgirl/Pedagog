@@ -1,4 +1,5 @@
 "use strict";
+
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -3250,6 +3251,19 @@ var InlineDebugAdapterFactory = class {
 // src/extension.ts
 var runMode = "inline";
 function activate(context) {
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand('preview.start', () => {
+      // Create and show a new webview
+      const panel = vscode.window.createWebviewPanel(
+        'preview', // Identifies the type of the webview. Used internally
+        'Preview', // Title of the panel displayed to the user
+        vscode.ViewColumn.One, // Editor column to show the new webview panel in.
+        {} // Webview options. More on these later.
+      );
+    })
+  );
+
   switch (runMode) {
     case "server":
       activateMockDebug(context, new MockDebugAdapterServerDescriptorFactory());

@@ -9,7 +9,7 @@
 
 import * as vscode from 'vscode';
 import { WorkspaceFolder, DebugConfiguration, ProviderResult, CancellationToken } from 'vscode';
-import { MockDebugSession } from './mockDebug';
+import { MockDebugSession } from './mockDebug'; //change
 import { FileAccessor } from './mockRuntime';
 
 export function activateMockDebug(context: vscode.ExtensionContext, factory?: vscode.DebugAdapterDescriptorFactory) {

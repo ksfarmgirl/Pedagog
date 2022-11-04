@@ -27,7 +27,7 @@
     "url": "https://github.com/Microsoft/vscode-mock-debug/issues"
   },
   "scripts": {
-    "compile": "tsc -p ./",
+    "compile": "tsc -watch -p ./",
     "lint": "eslint src --ext ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "esbuild-base": "esbuild ./src/extension.ts --bundle --tsconfig=./tsconfig.json --external:vscode --format=cjs --platform=node --outfile=dist/extension.js",
@@ -36,10 +36,14 @@
     "watch-web": "npm run -S esbuild-web -- --sourcemap --sources-content=false --watch",
     "build": "npm run -S esbuild-base -- --sourcemap --sources-content=false && npm run -S esbuild-web -- --sourcemap --sources-content=false",
     "package": "vsce package",
+    "postinstall": "node ./node_modules/vscode/bin/install",
     "publish": "vsce publish",
     "publish-pre-release": "vsce publish --pre-release",
-    "vscode:prepublish": "rimraf dist && npm run -S esbuild-base -- --minify && npm run -S esbuild-web -- --minify",
+    "vscode:prepublish": "rimraf dist && npm run -S esbuild-base -- --minify && npm run -S esbuild-web -- --minify && tsc -p ./",
     "test": "npm run typecheck"
+  },
+  "dependencies": {
+    "vscode": "*"
   },
   "devDependencies": {
     "@types/glob": "^7.2.0",
@@ -70,7 +74,8 @@
     "onDebugDynamicConfigurations:mock",
     "onCommand:extension.mock-debug.getProgramName",
     "onCommand:extension.mock-debug.runEditorContents",
-    "onCommand:extension.mock-debug.debugEditorContents"
+    "onCommand:extension.mock-debug.debugEditorContents",
+    "onCommand:preview.start"
   ],
   "workspaceTrust": {
     "request": "never"
@@ -124,6 +129,11 @@
       {
         "command": "extension.mock-debug.toggleFormatting",
         "title": "Toggle between decimal and hex formatting"
+      },
+      {
+        "command": "preview.start",
+        "title": "Start new preview window",
+        "category": "Preview"
       }
     ],
     "breakpoints": [
