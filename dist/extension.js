@@ -3261,8 +3261,23 @@ function activate(context) {
         vscode.ViewColumn.One, // Editor column to show the new webview panel in.
         {} // Webview options. More on these later.
       );
+      panel.webview.html = getWebviewContent();
     })
   );
+
+  function getWebviewContent() {
+    return `<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Debugger</title>
+    </head>
+    <body>
+        <p>Hello Worldddd</p>
+    </body>
+    </html>`;
+  }
 
   switch (runMode) {
     case "server":
