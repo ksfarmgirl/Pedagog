@@ -3294,6 +3294,9 @@ async function activate(context) {
     </html>`;
   }
 
+  // Opens preview window on extension startup by using preview.start
+  vscode.commands.executeCommand('preview.start');
+
   switch (runMode) {
     case "server":
       activateMockDebug(context, new MockDebugAdapterServerDescriptorFactory());
