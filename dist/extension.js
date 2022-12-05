@@ -3267,13 +3267,23 @@ async function activate(context) {
 		await extPy.activate();
 	}
 
+  // Track currently webview panel
+  let currentPanel = undefined;
+  // ^^^ simplified from below line of commented code
+  // let currentPanel: vscode.WebviewPanel | undefined = undefined;
+
   context.subscriptions.push(
     vscode.commands.registerCommand('preview.start', () => {
+
+      const columnToShowIn = vscode.window.activeTextEditor
+        ? vscode.window.activeTextEditor.viewColumn
+        : undefined;
+
       // Create and show a new webview
-      const panel = vscode.window.createWebviewPanel(
+      currentPanel = vscode.window.createWebviewPanel(
         'preview', // Identifies the type of the webview. Used internally
         'Preview', // Title of the panel displayed to the user
-        vscode.ViewColumn.One, // Editor column to show the new webview panel in.
+        columnToShowIn, // Editor column to show the new webview panel in.
         {} // Webview options. More on these later.
       );
       panel.webview.html = getWebviewContent();
