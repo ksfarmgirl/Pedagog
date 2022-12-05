@@ -3248,9 +3248,24 @@ var InlineDebugAdapterFactory = class {
   }
 };
 
+//Python extension check variable
+let extPy;
+
 // src/extension.ts
 var runMode = "inline";
-function activate(context) {
+async function activate(context) {
+
+  //Set python extension 
+	extPy = vscode.extensions.getExtension("ms-python.python");
+
+	//Check for python extension 
+	if(!extPy){
+		vscode.window.showErrorMessage("You must have the official Python extension to use this debugger!");
+		return;
+	}
+  if(!extPy.isActive){
+		await extPy.activate();
+	}
 
   context.subscriptions.push(
     vscode.commands.registerCommand('preview.start', () => {
