@@ -1,9 +1,10 @@
 {
 	"version": "0.2.0",
-	"configurations": [
+	"configurations": [		
 		{
 			"args": [
-				"--extensionDevelopmentPath=${workspaceFolder}"
+				"--extensionDevelopmentPath=${workspaceFolder}",
+				"${workspaceFolder}/sampleWorkspace"
 			],
 			"name": "Launch Extension",
 			"outFiles": [
@@ -14,12 +15,12 @@
 			"type": "extensionHost"
 		},
 		{
-            "type": "Mock Launch",
-            "request": "launch",
-            "name": "Ask for file name",
-            "program": "${workspaceFolder}/${command:AskForProgramName}",
-            "stopOnEntry": true
-        },
+			"type": "Mock Launch",
+			"request": "launch",
+			"name": "Ask for file name",
+			"program": "${workspaceFolder}/${command:AskForProgramName}",
+			"stopOnEntry": true
+		},
 		{
 			"name": "Extension",
 			"type": "extensionHost",
@@ -69,8 +70,10 @@
 			"cwd": "${workspaceFolder}",
 			"program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
 			"args": [
-				"-u", "tdd",
-				"--timeout", "999999",
+				"-u",
+				"tdd",
+				"--timeout",
+				"999999",
 				"--colors",
 				"./out/tests/"
 			],
@@ -79,12 +82,23 @@
 			],
 			"internalConsoleOptions": "openOnSessionStart",
 			"preLaunchTask": "npm: compile"
+		},
+		{
+			"name": "Python: Current File",
+			"type": "python",
+			"request": "launch",
+			"program": "${file}",
+			"console": "integratedTerminal",
+			"justMyCode": true
 		}
 	],
 	"compounds": [
 		{
 			"name": "Extension + Server",
-			"configurations": [ "Extension", "Server" ]
+			"configurations": [
+				"Extension",
+				"Server"
+			]
 		}
 	]
 }
