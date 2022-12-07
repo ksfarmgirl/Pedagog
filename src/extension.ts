@@ -31,7 +31,63 @@ import { activateMockDebug, workspaceFileAccessor } from './activateMockDebug';
  */
 const runMode: 'external' | 'server' | 'namedPipeServer' | 'inline' = 'inline';
 
-export function activate(context: vscode.ExtensionContext) {
+//Python extension check variable
+let extPy;
+
+export async function activate(context: vscode.ExtensionContext) {
+
+	//Set python extension 
+	extPy = vscode.extensions.getExtension("ms-python.python");
+
+	//Check for python extension 
+	if(!extPy){
+		vscode.window.showErrorMessage("You must have the official Python extension to use this debugger!");
+		return;
+	}
+  if(!extPy.isActive){
+		await extPy.activate();
+	}
+
+  // Track currently webview panel
+  //let currentPanel = undefined;
+  // ^^^ simplified from below line of commented code
+  let currentPanel: vscode.WebviewPanel | undefined = undefined;
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand('preview.start', () => {
+
+      const columnToShowIn = vscode.window.activeTextEditor
+        ? vscode.window.activeTextEditor.viewColumn
+        : undefined;
+
+      // Create and show a new webview
+      currentPanel = vscode.window.createWebviewPanel(
+        'preview', // Identifies the type of the webview. Used internally
+        'Preview', // Title of the panel displayed to the user
+        columnToShowIn, // Editor column to show the new webview panel in.
+        {} // Webview options. More on these later.
+      );
+      currentPanel.webview.html = getWebviewContent();
+    })
+  );
+
+  function getWebviewContent() {
+    return `<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Debugger</title>
+    </head>
+    <body>
+        <p>Hello Worldddd</p>
+    </body>
+    </html>`;
+  }
+
+  // Opens preview window on extension startup by using preview.start
+  vscode.commands.executeCommand('preview.start');
+
 
 	// debug adapters can be run in different ways by using a vscode.DebugAdapterDescriptorFactory:
 	switch (runMode) {

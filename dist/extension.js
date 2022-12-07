@@ -3268,25 +3268,35 @@ async function activate(context) {
 	}
 
   // Track currently webview panel
-  let currentPanel = undefined;
+  //let currentPanel = undefined;
   // ^^^ simplified from below line of commented code
-  // let currentPanel: vscode.WebviewPanel | undefined = undefined;
+  let currentPanel = vscode.WebviewPanel;
 
   context.subscriptions.push(
     vscode.commands.registerCommand('preview.start', () => {
 
-      const columnToShowIn = vscode.window.activeTextEditor
-        ? vscode.window.activeTextEditor.viewColumn
-        : undefined;
+        if (currentPanel) {
+          // If we already have a panel, show it in the target column
+          currentPanel.reveal(vscode.ViewColumn.Two);
+        } else {
+          // Otherwise, create a new panel
+          currentPanel = vscode.window.createWebviewPanel(
+            'preview',
+            'Preview',
+            vscode.ViewColumn.Two,
+            {}
+          );
+      currentPanel.webview.html = getWebviewContent('Preview');
 
-      // Create and show a new webview
-      currentPanel = vscode.window.createWebviewPanel(
-        'preview', // Identifies the type of the webview. Used internally
-        'Preview', // Title of the panel displayed to the user
-        columnToShowIn, // Editor column to show the new webview panel in.
-        {} // Webview options. More on these later.
+       // Reset when the current panel is closed
+       currentPanel.onDidDispose(
+        () => {
+          currentPanel = undefined;
+        },
+        null,
+        context.subscriptions
       );
-      panel.webview.html = getWebviewContent();
+    }
     })
   );
 
