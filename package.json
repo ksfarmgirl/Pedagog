@@ -42,7 +42,6 @@
     "vscode:prepublish": "rimraf dist && npm run -S esbuild-base -- --minify && npm run -S esbuild-web -- --minify && tsc -p ./",
     "test": "npm run typecheck"
   },
-
   "devDependencies": {
     "@types/glob": "^7.2.0",
     "@types/mocha": "^9.1.0",
@@ -250,5 +249,8 @@
         }
       }
     ]
+  },
+  "dependencies": {
+    "arepl-backend": "^2.0.2"
   }
 }
