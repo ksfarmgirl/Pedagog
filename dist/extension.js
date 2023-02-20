@@ -3271,6 +3271,7 @@ async function activate(context) {
   //let currentPanel = undefined;
   // ^^^ simplified from below line of commented code
   let currentPanel = vscode.WebviewPanel;
+  //var vars = dump(5);
 
   context.subscriptions.push(
     vscode.commands.registerCommand('preview.start', () => {
