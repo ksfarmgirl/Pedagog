@@ -251,6 +251,7 @@
     ]
   },
   "dependencies": {
-    "arepl-backend": "^2.0.2"
+    "arepl-backend": "^2.0.2",
+    "react-use-websocket": "^4.3.1"
   }
 }
