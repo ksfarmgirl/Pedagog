@@ -17,6 +17,7 @@
 
 import * as Net from 'net';
 import * as vscode from 'vscode';
+import { PythonEvaluator } from 'arepl-backend';
 import { randomBytes } from 'crypto';
 import { tmpdir } from 'os';
 import { join } from 'path';
@@ -48,26 +49,39 @@ export async function activate(context: vscode.ExtensionContext) {
 		await extPy.activate();
 	}
 
-  // Track currently webview panel
+	// Track currently webview panel
   //let currentPanel = undefined;
   // ^^^ simplified from below line of commented code
-  let currentPanel: vscode.WebviewPanel | undefined = undefined;
+  let currentPanel = vscode.WebviewPanel;
+  //var vars = dump(5);
 
   context.subscriptions.push(
     vscode.commands.registerCommand('preview.start', () => {
 
-      const columnToShowIn = vscode.window.activeTextEditor
-        ? vscode.window.activeTextEditor.viewColumn
-        : undefined;
-
-      // Create and show a new webview
-      currentPanel = vscode.window.createWebviewPanel(
-        'preview', // Identifies the type of the webview. Used internally
-        'Preview', // Title of the panel displayed to the user
-        columnToShowIn, // Editor column to show the new webview panel in.
-        {} // Webview options. More on these later.
-      );
+        if (currentPanel) {
+          // If we already have a panel, show it in the target column
+          currentPanel.reveal(vscode.ViewColumn.Two);
+        } else {
+          // Otherwise, create a new panel
+          currentPanel = vscode.window.createWebviewPanel(
+            'preview',
+            'Preview',
+            vscode.ViewColumn.Two,
+            {
+              enableScripts: true
+            }
+          );
       currentPanel.webview.html = getWebviewContent();
+
+       // Reset when the current panel is closed
+       currentPanel.onDidDispose(
+        () => {
+          currentPanel = undefined;
+        },
+        null,
+        context.subscriptions
+      );
+    }
     })
   );
 
@@ -77,17 +91,26 @@ export async function activate(context: vscode.ExtensionContext) {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Debugger</title>
+        <title>Cat Coding</title>
     </head>
     <body>
-        <p>Hello Worldddd</p>
+        <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" width="300" />
+        <h1 id="lines-of-code-counter">0</h1>
+    
+        <script>
+            const counter = document.getElementById('lines-of-code-counter');
+    
+            let count = 0;
+            setInterval(() => {
+                counter.textContent = count++;
+            }, 100);
+        </script>
     </body>
     </html>`;
   }
 
   // Opens preview window on extension startup by using preview.start
   vscode.commands.executeCommand('preview.start');
-
 
 	// debug adapters can be run in different ways by using a vscode.DebugAdapterDescriptorFactory:
 	switch (runMode) {

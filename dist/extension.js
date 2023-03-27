@@ -1,5 +1,7 @@
 "use strict";
 
+import * as vscode from 'vscode';
+import {PythonEvaluator} from 'arepl-backend';
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -3271,7 +3273,7 @@ async function activate(context) {
   //let currentPanel = undefined;
   // ^^^ simplified from below line of commented code
   let currentPanel = vscode.WebviewPanel;
-  //var vars = dump(5);
+  var vars = dump(5);
 
   context.subscriptions.push(
     vscode.commands.registerCommand('preview.start', () => {
