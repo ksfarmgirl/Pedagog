@@ -32,9 +32,11 @@ var __copyProps = (to, from, except, desc) => {
 var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target, mod));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// JavaScript libraries
 // Src files begin at 1958
 // Active function at 3260. This is the mainly edited area of this file.
+// Webview code at 3324
+
+// JavaScript libraries
 
 // node_modules/@vscode/debugadapter/lib/messages.js
 var require_messages = __commonJS({
@@ -3286,7 +3288,7 @@ async function activate(context) {
 	}
 
   // Track currently webview panel
-  //let currentPanel = undefined;
+  // let currentPanel = undefined;
   // ^^^ simplified from below line of commented code
   let currentPanel = vscode.WebviewPanel;
   //var vars = dump(5);
@@ -3321,6 +3323,7 @@ async function activate(context) {
     })
   );
 
+  //This is the code that appears in our Webview
   function getWebviewContent() {
     return `<!DOCTYPE html>
     <html lang="en">
