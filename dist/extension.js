@@ -1,3 +1,8 @@
+/*This is the main functionality file for our Webview and thus is the file we spend
+most of our time editing and experimenting in. It is the JS version of extension.TS.
+We have been editing this file in instead of the TS version in order to get a visual
+prototype functioning.*/
+
 "use strict";
 
 var __create = Object.create;
@@ -23,6 +28,10 @@ var __copyProps = (to, from, except, desc) => {
 };
 var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target, mod));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
+// JavaScript libraries
+// Src files begin at 1958
+// Active function at 3260. This is the mainly edited area of this file.
 
 // node_modules/@vscode/debugadapter/lib/messages.js
 var require_messages = __commonJS({
@@ -1955,6 +1964,8 @@ var require_base64_js = __commonJS({
   }
 });
 
+// Beginning of source files
+
 // src/extension.ts
 var extension_exports = {};
 __export(extension_exports, {
@@ -1972,6 +1983,8 @@ var import_process = require("process");
 // src/mockDebug.ts
 var import_debugadapter = __toESM(require_main());
 var import_path_browserify = __toESM(require_path_browserify());
+
+// Debug functions are in mockRuntime
 
 // src/mockRuntime.ts
 var import_events = require("events");
@@ -3247,6 +3260,8 @@ var InlineDebugAdapterFactory = class {
     return new vscode.DebugAdapterInlineImplementation(new MockDebugSession(workspaceFileAccessor));
   }
 };
+
+// The activate function is the only edited area in this code
 
 // src/extension.ts
 var runMode = "inline";
