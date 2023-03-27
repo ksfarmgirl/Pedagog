@@ -1,6 +1,6 @@
 /*This is the main functionality file for our Webview and thus is the file we spend
 most of our time editing and experimenting in. It is the JS version of extension.TS.
-We have been editing this file in instead of the TS version in order to get a visual
+We have been editing this file instead of the TS version in order to get a visual
 prototype functioning.*/
 
 "use strict";
