@@ -22,4 +22,4 @@ for char in ['a','b','c']:
 
 a=1
 dump(a) # dump specific vars at any point in your program
-a=2
+a=

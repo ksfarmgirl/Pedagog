@@ -8,6 +8,8 @@ prototype functioning.*/
 //trying to use these to display output
 //import * as vscode from 'vscode';
 //import {PythonEvaluator} from 'arepl-backend';
+Object.defineProperty(exports, "__esModule", { value: true });
+var __evaluate = Object.arepl_python_evaluator;
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -1993,6 +1995,7 @@ var import_path_browserify = __toESM(require_path_browserify());
 
 // src/mockRuntime.ts
 var import_events = require("events");
+const { PythonEvaluator } = require("arepl-backend");
 var RuntimeVariable = class {
   constructor(name, _value) {
     this.name = name;
@@ -3309,7 +3312,7 @@ async function activate(context) {
               enableScripts: true
             }
           );
-      currentPanel.webview.html = getWebviewContent('Preview');
+      currentPanel.webview.html = getWebviewContent(PythonEvaluator.arguments);
 
        // Reset when the current panel is closed
        currentPanel.onDidDispose(
@@ -3335,6 +3338,7 @@ async function activate(context) {
     <body>
         <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" width="300" />
         <h1 id="lines-of-code-counter">0</h1>
+        <p id="thing">I hope this works.</p>
     
         <script>
             const counter = document.getElementById('lines-of-code-counter');
@@ -3343,6 +3347,21 @@ async function activate(context) {
             setInterval(() => {
                 counter.textContent = count++;
             }, 100);
+        </script>
+
+        <script>
+          console.stdlog = console.log.bind(console);
+          console.logs = [];
+          console.log = function(){
+            console.logs.push(Array.from(arguments));
+            console.stdlog.apply(console, arguments);
+          };
+
+          const thing = document.getElementById('thing');
+
+          setInterval(() => {
+            thing.textContent = console.logs;
+        }, 100);
         </script>
     </body>
     </html>`;

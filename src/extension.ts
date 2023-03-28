@@ -17,7 +17,7 @@
 
 import * as Net from 'net';
 import * as vscode from 'vscode';
-import { PythonEvaluator } from 'arepl-backend';
+import { PythonEvaluator } from 'arepl-backend/index';
 import { randomBytes } from 'crypto';
 import { tmpdir } from 'os';
 import { join } from 'path';
