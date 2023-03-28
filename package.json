@@ -45,7 +45,7 @@
   "devDependencies": {
     "@types/glob": "^7.2.0",
     "@types/mocha": "^9.1.0",
-    "@types/node": "^14.18.33",
+    "@types/node": "^14.18.41",
     "@types/vscode": "^1.73.0",
     "@typescript-eslint/eslint-plugin": "^5.17.0",
     "@typescript-eslint/parser": "^5.17.0",
@@ -251,7 +251,19 @@
     ]
   },
   "dependencies": {
+    "-": "^0.0.1",
+    "@types/react": "^18.0.30",
+    "@types/react-dom": "^18.0.11",
     "arepl-backend": "^2.0.2",
-    "react-use-websocket": "^4.3.1"
+    "css-loader": "^6.7.3",
+    "npm-run-all": "^4.1.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-use-websocket": "^4.3.1",
+    "save-dev": "^0.0.1-security",
+    "style-loader": "^3.3.2",
+    "ts-loader": "^9.4.2",
+    "webpack": "^5.76.3",
+    "webpack-cli": "^5.0.1"
   }
 }
