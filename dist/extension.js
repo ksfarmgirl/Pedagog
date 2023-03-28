@@ -2,6 +2,9 @@
 most of our time editing and experimenting in. It is the JS version of extension.TS.
 We have been editing this file instead of the TS version in order to get a visual
 prototype functioning.*/
+// Src files begin at ~1958
+// Active function at ~3260. This is the mainly edited area of this file.
+// Webview code at ~3328
 
 "use strict";
 
@@ -33,10 +36,6 @@ var __copyProps = (to, from, except, desc) => {
 };
 var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target, mod));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-
-// Src files begin at 1958
-// Active function at 3260. This is the mainly edited area of this file.
-// Webview code at 3324
 
 // JavaScript libraries
 
