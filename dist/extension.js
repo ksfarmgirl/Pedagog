@@ -3349,17 +3349,12 @@ async function activate(context) {
         </script>
 
         <script>
-          console.stdlog = console.log.bind(console);
-          console.logs = [];
-          console.log = function(){
-            console.logs.push(Array.from(arguments));
-            console.stdlog.apply(console, arguments);
-          };
+        Object.defineProperty(exports, "__esModule", { value: true });
 
           const thing = document.getElementById('thing');
 
           setInterval(() => {
-            thing.textContent = console.logs;
+            thing.textContent = PythonEvaluator.start();
         }, 100);
         </script>
     </body>
