@@ -3336,7 +3336,7 @@ async function activate(context) {
     <body>
         <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" width="300" />
         <h1 id="lines-of-code-counter">0</h1>
-        <p id="thing">I hope this works.</p>
+        <p id="thing">This is the best react app you have ever seen!</p>
     
         <script>
             const counter = document.getElementById('lines-of-code-counter');
