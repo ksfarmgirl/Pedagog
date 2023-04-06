@@ -14,11 +14,13 @@ wss.on('connection', (ws) => {
 
     //print data for debug purposes, on message
     ws.on('message', (data) => {
-        console.log(`Received message from client: ${data}`);
-    })
+        console.log(`Received message from client: ${data}`); //message received from client is outputted
+    });
 
-    ws.send('Hello client, you have connected to server.ts')
-})
+    //message to send to client letting them know they are connected
+    ws.send('Hello client, you have connected to server.ts');
+});
 
+//message to show server running on port (8000)
 console.log(`Listening at ${port}...`);
 

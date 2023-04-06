@@ -6,13 +6,19 @@
  ***********************************************/
 import WebSocket from "ws";
 
+//port used by server
 const port = 8000;
+
+//Websocket to connect to server on port
 const ws = new WebSocket(`ws://localhost:${port}`);
 
+//On connection, tells server that the client has connected
 ws.on('open', () => {
-    console.log('[Client] Connected.')
-    ws.send('Hi, this is from the client');
+    console.log('[Client] Connected.'); //tells client they have connected
+    ws.send('Hi, this is from the client'); //sends message to server to show that a new client is connected
 });
+
+//Handles when a message is received from the server, displays message
 ws.on('message', (data) => {
     console.log(`Received a message from the server: ${data}`);
 });
