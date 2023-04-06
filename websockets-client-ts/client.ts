@@ -3,6 +3,8 @@
  * server used by the React frontend, an attempt
  * at least...
  * WORK IN PROGRESS
+ * Heavily influenced by Nono Martinez Alonso
+ * from https://www.youtube.com/watch?v=Y_gzsO4U7Dw
  ***********************************************/
 import WebSocket from "ws";
 

@@ -1,8 +1,10 @@
-/************************************************************
-NOTE: This is an attempt at creating a server to be used by
-the react frontend that communicates with the AREPL backend.
-WORK IN PROGRESS
-*************************************************************/
+/**************************************************************
+ * NOTE: This is an attempt at creating a server to be used by
+ * the react frontend that communicates with the AREPL backend.
+ * WORK IN PROGRESS
+ * Heavily influenced by Nono Martinez Alonso
+ * from https://www.youtube.com/watch?v=h5B0iOz8vVg
+ **************************************************************/
 import { WebSocketServer } from "ws";
 
 //port for server to listen on
