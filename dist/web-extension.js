@@ -1,4 +1,3 @@
-"use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -22,6 +21,374 @@ var __copyProps = (to, from, except, desc) => {
 };
 var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target, mod));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
+// node_modules/events/events.js
+var require_events = __commonJS({
+  "node_modules/events/events.js"(exports, module2) {
+    "use strict";
+    var R = typeof Reflect === "object" ? Reflect : null;
+    var ReflectApply = R && typeof R.apply === "function" ? R.apply : function ReflectApply2(target, receiver, args) {
+      return Function.prototype.apply.call(target, receiver, args);
+    };
+    var ReflectOwnKeys;
+    if (R && typeof R.ownKeys === "function") {
+      ReflectOwnKeys = R.ownKeys;
+    } else if (Object.getOwnPropertySymbols) {
+      ReflectOwnKeys = function ReflectOwnKeys2(target) {
+        return Object.getOwnPropertyNames(target).concat(Object.getOwnPropertySymbols(target));
+      };
+    } else {
+      ReflectOwnKeys = function ReflectOwnKeys2(target) {
+        return Object.getOwnPropertyNames(target);
+      };
+    }
+    function ProcessEmitWarning(warning) {
+      if (console && console.warn)
+        console.warn(warning);
+    }
+    var NumberIsNaN = Number.isNaN || function NumberIsNaN2(value) {
+      return value !== value;
+    };
+    function EventEmitter2() {
+      EventEmitter2.init.call(this);
+    }
+    module2.exports = EventEmitter2;
+    module2.exports.once = once;
+    EventEmitter2.EventEmitter = EventEmitter2;
+    EventEmitter2.prototype._events = void 0;
+    EventEmitter2.prototype._eventsCount = 0;
+    EventEmitter2.prototype._maxListeners = void 0;
+    var defaultMaxListeners = 10;
+    function checkListener(listener) {
+      if (typeof listener !== "function") {
+        throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
+      }
+    }
+    Object.defineProperty(EventEmitter2, "defaultMaxListeners", {
+      enumerable: true,
+      get: function() {
+        return defaultMaxListeners;
+      },
+      set: function(arg) {
+        if (typeof arg !== "number" || arg < 0 || NumberIsNaN(arg)) {
+          throw new RangeError('The value of "defaultMaxListeners" is out of range. It must be a non-negative number. Received ' + arg + ".");
+        }
+        defaultMaxListeners = arg;
+      }
+    });
+    EventEmitter2.init = function() {
+      if (this._events === void 0 || this._events === Object.getPrototypeOf(this)._events) {
+        this._events = /* @__PURE__ */ Object.create(null);
+        this._eventsCount = 0;
+      }
+      this._maxListeners = this._maxListeners || void 0;
+    };
+    EventEmitter2.prototype.setMaxListeners = function setMaxListeners(n) {
+      if (typeof n !== "number" || n < 0 || NumberIsNaN(n)) {
+        throw new RangeError('The value of "n" is out of range. It must be a non-negative number. Received ' + n + ".");
+      }
+      this._maxListeners = n;
+      return this;
+    };
+    function _getMaxListeners(that) {
+      if (that._maxListeners === void 0)
+        return EventEmitter2.defaultMaxListeners;
+      return that._maxListeners;
+    }
+    EventEmitter2.prototype.getMaxListeners = function getMaxListeners() {
+      return _getMaxListeners(this);
+    };
+    EventEmitter2.prototype.emit = function emit(type) {
+      var args = [];
+      for (var i = 1; i < arguments.length; i++)
+        args.push(arguments[i]);
+      var doError = type === "error";
+      var events = this._events;
+      if (events !== void 0)
+        doError = doError && events.error === void 0;
+      else if (!doError)
+        return false;
+      if (doError) {
+        var er;
+        if (args.length > 0)
+          er = args[0];
+        if (er instanceof Error) {
+          throw er;
+        }
+        var err = new Error("Unhandled error." + (er ? " (" + er.message + ")" : ""));
+        err.context = er;
+        throw err;
+      }
+      var handler = events[type];
+      if (handler === void 0)
+        return false;
+      if (typeof handler === "function") {
+        ReflectApply(handler, this, args);
+      } else {
+        var len = handler.length;
+        var listeners = arrayClone(handler, len);
+        for (var i = 0; i < len; ++i)
+          ReflectApply(listeners[i], this, args);
+      }
+      return true;
+    };
+    function _addListener(target, type, listener, prepend) {
+      var m;
+      var events;
+      var existing;
+      checkListener(listener);
+      events = target._events;
+      if (events === void 0) {
+        events = target._events = /* @__PURE__ */ Object.create(null);
+        target._eventsCount = 0;
+      } else {
+        if (events.newListener !== void 0) {
+          target.emit("newListener", type, listener.listener ? listener.listener : listener);
+          events = target._events;
+        }
+        existing = events[type];
+      }
+      if (existing === void 0) {
+        existing = events[type] = listener;
+        ++target._eventsCount;
+      } else {
+        if (typeof existing === "function") {
+          existing = events[type] = prepend ? [listener, existing] : [existing, listener];
+        } else if (prepend) {
+          existing.unshift(listener);
+        } else {
+          existing.push(listener);
+        }
+        m = _getMaxListeners(target);
+        if (m > 0 && existing.length > m && !existing.warned) {
+          existing.warned = true;
+          var w = new Error("Possible EventEmitter memory leak detected. " + existing.length + " " + String(type) + " listeners added. Use emitter.setMaxListeners() to increase limit");
+          w.name = "MaxListenersExceededWarning";
+          w.emitter = target;
+          w.type = type;
+          w.count = existing.length;
+          ProcessEmitWarning(w);
+        }
+      }
+      return target;
+    }
+    EventEmitter2.prototype.addListener = function addListener(type, listener) {
+      return _addListener(this, type, listener, false);
+    };
+    EventEmitter2.prototype.on = EventEmitter2.prototype.addListener;
+    EventEmitter2.prototype.prependListener = function prependListener(type, listener) {
+      return _addListener(this, type, listener, true);
+    };
+    function onceWrapper() {
+      if (!this.fired) {
+        this.target.removeListener(this.type, this.wrapFn);
+        this.fired = true;
+        if (arguments.length === 0)
+          return this.listener.call(this.target);
+        return this.listener.apply(this.target, arguments);
+      }
+    }
+    function _onceWrap(target, type, listener) {
+      var state = { fired: false, wrapFn: void 0, target, type, listener };
+      var wrapped = onceWrapper.bind(state);
+      wrapped.listener = listener;
+      state.wrapFn = wrapped;
+      return wrapped;
+    }
+    EventEmitter2.prototype.once = function once2(type, listener) {
+      checkListener(listener);
+      this.on(type, _onceWrap(this, type, listener));
+      return this;
+    };
+    EventEmitter2.prototype.prependOnceListener = function prependOnceListener(type, listener) {
+      checkListener(listener);
+      this.prependListener(type, _onceWrap(this, type, listener));
+      return this;
+    };
+    EventEmitter2.prototype.removeListener = function removeListener(type, listener) {
+      var list, events, position, i, originalListener;
+      checkListener(listener);
+      events = this._events;
+      if (events === void 0)
+        return this;
+      list = events[type];
+      if (list === void 0)
+        return this;
+      if (list === listener || list.listener === listener) {
+        if (--this._eventsCount === 0)
+          this._events = /* @__PURE__ */ Object.create(null);
+        else {
+          delete events[type];
+          if (events.removeListener)
+            this.emit("removeListener", type, list.listener || listener);
+        }
+      } else if (typeof list !== "function") {
+        position = -1;
+        for (i = list.length - 1; i >= 0; i--) {
+          if (list[i] === listener || list[i].listener === listener) {
+            originalListener = list[i].listener;
+            position = i;
+            break;
+          }
+        }
+        if (position < 0)
+          return this;
+        if (position === 0)
+          list.shift();
+        else {
+          spliceOne(list, position);
+        }
+        if (list.length === 1)
+          events[type] = list[0];
+        if (events.removeListener !== void 0)
+          this.emit("removeListener", type, originalListener || listener);
+      }
+      return this;
+    };
+    EventEmitter2.prototype.off = EventEmitter2.prototype.removeListener;
+    EventEmitter2.prototype.removeAllListeners = function removeAllListeners(type) {
+      var listeners, events, i;
+      events = this._events;
+      if (events === void 0)
+        return this;
+      if (events.removeListener === void 0) {
+        if (arguments.length === 0) {
+          this._events = /* @__PURE__ */ Object.create(null);
+          this._eventsCount = 0;
+        } else if (events[type] !== void 0) {
+          if (--this._eventsCount === 0)
+            this._events = /* @__PURE__ */ Object.create(null);
+          else
+            delete events[type];
+        }
+        return this;
+      }
+      if (arguments.length === 0) {
+        var keys = Object.keys(events);
+        var key;
+        for (i = 0; i < keys.length; ++i) {
+          key = keys[i];
+          if (key === "removeListener")
+            continue;
+          this.removeAllListeners(key);
+        }
+        this.removeAllListeners("removeListener");
+        this._events = /* @__PURE__ */ Object.create(null);
+        this._eventsCount = 0;
+        return this;
+      }
+      listeners = events[type];
+      if (typeof listeners === "function") {
+        this.removeListener(type, listeners);
+      } else if (listeners !== void 0) {
+        for (i = listeners.length - 1; i >= 0; i--) {
+          this.removeListener(type, listeners[i]);
+        }
+      }
+      return this;
+    };
+    function _listeners(target, type, unwrap) {
+      var events = target._events;
+      if (events === void 0)
+        return [];
+      var evlistener = events[type];
+      if (evlistener === void 0)
+        return [];
+      if (typeof evlistener === "function")
+        return unwrap ? [evlistener.listener || evlistener] : [evlistener];
+      return unwrap ? unwrapListeners(evlistener) : arrayClone(evlistener, evlistener.length);
+    }
+    EventEmitter2.prototype.listeners = function listeners(type) {
+      return _listeners(this, type, true);
+    };
+    EventEmitter2.prototype.rawListeners = function rawListeners(type) {
+      return _listeners(this, type, false);
+    };
+    EventEmitter2.listenerCount = function(emitter, type) {
+      if (typeof emitter.listenerCount === "function") {
+        return emitter.listenerCount(type);
+      } else {
+        return listenerCount.call(emitter, type);
+      }
+    };
+    EventEmitter2.prototype.listenerCount = listenerCount;
+    function listenerCount(type) {
+      var events = this._events;
+      if (events !== void 0) {
+        var evlistener = events[type];
+        if (typeof evlistener === "function") {
+          return 1;
+        } else if (evlistener !== void 0) {
+          return evlistener.length;
+        }
+      }
+      return 0;
+    }
+    EventEmitter2.prototype.eventNames = function eventNames() {
+      return this._eventsCount > 0 ? ReflectOwnKeys(this._events) : [];
+    };
+    function arrayClone(arr, n) {
+      var copy = new Array(n);
+      for (var i = 0; i < n; ++i)
+        copy[i] = arr[i];
+      return copy;
+    }
+    function spliceOne(list, index) {
+      for (; index + 1 < list.length; index++)
+        list[index] = list[index + 1];
+      list.pop();
+    }
+    function unwrapListeners(arr) {
+      var ret = new Array(arr.length);
+      for (var i = 0; i < ret.length; ++i) {
+        ret[i] = arr[i].listener || arr[i];
+      }
+      return ret;
+    }
+    function once(emitter, name) {
+      return new Promise(function(resolve, reject) {
+        function errorListener(err) {
+          emitter.removeListener(name, resolver);
+          reject(err);
+        }
+        function resolver() {
+          if (typeof emitter.removeListener === "function") {
+            emitter.removeListener("error", errorListener);
+          }
+          resolve([].slice.call(arguments));
+        }
+        ;
+        eventTargetAgnosticAddListener(emitter, name, resolver, { once: true });
+        if (name !== "error") {
+          addErrorHandlerIfEventEmitter(emitter, errorListener, { once: true });
+        }
+      });
+    }
+    function addErrorHandlerIfEventEmitter(emitter, handler, flags) {
+      if (typeof emitter.on === "function") {
+        eventTargetAgnosticAddListener(emitter, "error", handler, flags);
+      }
+    }
+    function eventTargetAgnosticAddListener(emitter, name, listener, flags) {
+      if (typeof emitter.on === "function") {
+        if (flags.once) {
+          emitter.once(name, listener);
+        } else {
+          emitter.on(name, listener);
+        }
+      } else if (typeof emitter.addEventListener === "function") {
+        emitter.addEventListener(name, function wrapListener(arg) {
+          if (flags.once) {
+            emitter.removeEventListener(name, wrapListener);
+          }
+          listener(arg);
+        });
+      } else {
+        throw new TypeError('The "emitter" argument must be of type EventEmitter. Received type ' + typeof emitter);
+      }
+    }
+  }
+});
 
 // node_modules/@vscode/debugadapter/lib/messages.js
 var require_messages = __commonJS({
@@ -69,7 +436,7 @@ var require_protocol = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ProtocolServer = void 0;
-    var ee = require("events");
+    var ee = require_events();
     var messages_1 = require_messages();
     var Emitter = class {
       get event() {
@@ -238,42 +605,859 @@ ${json}`, "utf8");
   }
 });
 
-// node_modules/@vscode/debugadapter/lib/runDebugAdapter.js
-var require_runDebugAdapter = __commonJS({
-  "node_modules/@vscode/debugadapter/lib/runDebugAdapter.js"(exports) {
+// node_modules/@vscode/debugadapter/lib/web/runDebugAdapterStub.js
+var require_runDebugAdapterStub = __commonJS({
+  "node_modules/@vscode/debugadapter/lib/web/runDebugAdapterStub.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.runDebugAdapter = void 0;
-    var Net2 = require("net");
-    function runDebugAdapter(debugSession) {
-      let port = 0;
-      const args = process.argv.slice(2);
-      args.forEach(function(val, index, array) {
-        const portMatch = /^--server=(\d{4,5})$/.exec(val);
-        if (portMatch) {
-          port = parseInt(portMatch[1], 10);
-        }
-      });
-      if (port > 0) {
-        console.error(`waiting for debug protocol on port ${port}`);
-        Net2.createServer((socket) => {
-          console.error(">> accepted connection from client");
-          socket.on("end", () => {
-            console.error(">> client connection closed\n");
-          });
-          const session = new debugSession(false, true);
-          session.setRunAsServer(true);
-          session.start(socket, socket);
-        }).listen(port);
-      } else {
-        const session = new debugSession(false);
-        process.on("SIGTERM", () => {
-          session.shutdown();
-        });
-        session.start(process.stdin, process.stdout);
-      }
+    function runDebugAdapter() {
     }
     exports.runDebugAdapter = runDebugAdapter;
+  }
+});
+
+// node_modules/punycode/punycode.js
+var require_punycode = __commonJS({
+  "node_modules/punycode/punycode.js"(exports, module2) {
+    (function(root) {
+      var freeExports = typeof exports == "object" && exports && !exports.nodeType && exports;
+      var freeModule = typeof module2 == "object" && module2 && !module2.nodeType && module2;
+      var freeGlobal = typeof global == "object" && global;
+      if (freeGlobal.global === freeGlobal || freeGlobal.window === freeGlobal || freeGlobal.self === freeGlobal) {
+        root = freeGlobal;
+      }
+      var punycode, maxInt = 2147483647, base = 36, tMin = 1, tMax = 26, skew = 38, damp = 700, initialBias = 72, initialN = 128, delimiter = "-", regexPunycode = /^xn--/, regexNonASCII = /[^\x20-\x7E]/, regexSeparators = /[\x2E\u3002\uFF0E\uFF61]/g, errors = {
+        "overflow": "Overflow: input needs wider integers to process",
+        "not-basic": "Illegal input >= 0x80 (not a basic code point)",
+        "invalid-input": "Invalid input"
+      }, baseMinusTMin = base - tMin, floor = Math.floor, stringFromCharCode = String.fromCharCode, key;
+      function error(type) {
+        throw RangeError(errors[type]);
+      }
+      function map(array, fn) {
+        var length = array.length;
+        var result = [];
+        while (length--) {
+          result[length] = fn(array[length]);
+        }
+        return result;
+      }
+      function mapDomain(string, fn) {
+        var parts = string.split("@");
+        var result = "";
+        if (parts.length > 1) {
+          result = parts[0] + "@";
+          string = parts[1];
+        }
+        string = string.replace(regexSeparators, ".");
+        var labels = string.split(".");
+        var encoded = map(labels, fn).join(".");
+        return result + encoded;
+      }
+      function ucs2decode(string) {
+        var output = [], counter = 0, length = string.length, value, extra;
+        while (counter < length) {
+          value = string.charCodeAt(counter++);
+          if (value >= 55296 && value <= 56319 && counter < length) {
+            extra = string.charCodeAt(counter++);
+            if ((extra & 64512) == 56320) {
+              output.push(((value & 1023) << 10) + (extra & 1023) + 65536);
+            } else {
+              output.push(value);
+              counter--;
+            }
+          } else {
+            output.push(value);
+          }
+        }
+        return output;
+      }
+      function ucs2encode(array) {
+        return map(array, function(value) {
+          var output = "";
+          if (value > 65535) {
+            value -= 65536;
+            output += stringFromCharCode(value >>> 10 & 1023 | 55296);
+            value = 56320 | value & 1023;
+          }
+          output += stringFromCharCode(value);
+          return output;
+        }).join("");
+      }
+      function basicToDigit(codePoint) {
+        if (codePoint - 48 < 10) {
+          return codePoint - 22;
+        }
+        if (codePoint - 65 < 26) {
+          return codePoint - 65;
+        }
+        if (codePoint - 97 < 26) {
+          return codePoint - 97;
+        }
+        return base;
+      }
+      function digitToBasic(digit, flag) {
+        return digit + 22 + 75 * (digit < 26) - ((flag != 0) << 5);
+      }
+      function adapt(delta, numPoints, firstTime) {
+        var k = 0;
+        delta = firstTime ? floor(delta / damp) : delta >> 1;
+        delta += floor(delta / numPoints);
+        for (; delta > baseMinusTMin * tMax >> 1; k += base) {
+          delta = floor(delta / baseMinusTMin);
+        }
+        return floor(k + (baseMinusTMin + 1) * delta / (delta + skew));
+      }
+      function decode(input) {
+        var output = [], inputLength = input.length, out, i = 0, n = initialN, bias = initialBias, basic, j, index, oldi, w, k, digit, t, baseMinusT;
+        basic = input.lastIndexOf(delimiter);
+        if (basic < 0) {
+          basic = 0;
+        }
+        for (j = 0; j < basic; ++j) {
+          if (input.charCodeAt(j) >= 128) {
+            error("not-basic");
+          }
+          output.push(input.charCodeAt(j));
+        }
+        for (index = basic > 0 ? basic + 1 : 0; index < inputLength; ) {
+          for (oldi = i, w = 1, k = base; ; k += base) {
+            if (index >= inputLength) {
+              error("invalid-input");
+            }
+            digit = basicToDigit(input.charCodeAt(index++));
+            if (digit >= base || digit > floor((maxInt - i) / w)) {
+              error("overflow");
+            }
+            i += digit * w;
+            t = k <= bias ? tMin : k >= bias + tMax ? tMax : k - bias;
+            if (digit < t) {
+              break;
+            }
+            baseMinusT = base - t;
+            if (w > floor(maxInt / baseMinusT)) {
+              error("overflow");
+            }
+            w *= baseMinusT;
+          }
+          out = output.length + 1;
+          bias = adapt(i - oldi, out, oldi == 0);
+          if (floor(i / out) > maxInt - n) {
+            error("overflow");
+          }
+          n += floor(i / out);
+          i %= out;
+          output.splice(i++, 0, n);
+        }
+        return ucs2encode(output);
+      }
+      function encode(input) {
+        var n, delta, handledCPCount, basicLength, bias, j, m, q, k, t, currentValue, output = [], inputLength, handledCPCountPlusOne, baseMinusT, qMinusT;
+        input = ucs2decode(input);
+        inputLength = input.length;
+        n = initialN;
+        delta = 0;
+        bias = initialBias;
+        for (j = 0; j < inputLength; ++j) {
+          currentValue = input[j];
+          if (currentValue < 128) {
+            output.push(stringFromCharCode(currentValue));
+          }
+        }
+        handledCPCount = basicLength = output.length;
+        if (basicLength) {
+          output.push(delimiter);
+        }
+        while (handledCPCount < inputLength) {
+          for (m = maxInt, j = 0; j < inputLength; ++j) {
+            currentValue = input[j];
+            if (currentValue >= n && currentValue < m) {
+              m = currentValue;
+            }
+          }
+          handledCPCountPlusOne = handledCPCount + 1;
+          if (m - n > floor((maxInt - delta) / handledCPCountPlusOne)) {
+            error("overflow");
+          }
+          delta += (m - n) * handledCPCountPlusOne;
+          n = m;
+          for (j = 0; j < inputLength; ++j) {
+            currentValue = input[j];
+            if (currentValue < n && ++delta > maxInt) {
+              error("overflow");
+            }
+            if (currentValue == n) {
+              for (q = delta, k = base; ; k += base) {
+                t = k <= bias ? tMin : k >= bias + tMax ? tMax : k - bias;
+                if (q < t) {
+                  break;
+                }
+                qMinusT = q - t;
+                baseMinusT = base - t;
+                output.push(stringFromCharCode(digitToBasic(t + qMinusT % baseMinusT, 0)));
+                q = floor(qMinusT / baseMinusT);
+              }
+              output.push(stringFromCharCode(digitToBasic(q, 0)));
+              bias = adapt(delta, handledCPCountPlusOne, handledCPCount == basicLength);
+              delta = 0;
+              ++handledCPCount;
+            }
+          }
+          ++delta;
+          ++n;
+        }
+        return output.join("");
+      }
+      function toUnicode(input) {
+        return mapDomain(input, function(string) {
+          return regexPunycode.test(string) ? decode(string.slice(4).toLowerCase()) : string;
+        });
+      }
+      function toASCII(input) {
+        return mapDomain(input, function(string) {
+          return regexNonASCII.test(string) ? "xn--" + encode(string) : string;
+        });
+      }
+      punycode = {
+        "version": "1.3.2",
+        "ucs2": {
+          "decode": ucs2decode,
+          "encode": ucs2encode
+        },
+        "decode": decode,
+        "encode": encode,
+        "toASCII": toASCII,
+        "toUnicode": toUnicode
+      };
+      if (typeof define == "function" && typeof define.amd == "object" && define.amd) {
+        define("punycode", function() {
+          return punycode;
+        });
+      } else if (freeExports && freeModule) {
+        if (module2.exports == freeExports) {
+          freeModule.exports = punycode;
+        } else {
+          for (key in punycode) {
+            punycode.hasOwnProperty(key) && (freeExports[key] = punycode[key]);
+          }
+        }
+      } else {
+        root.punycode = punycode;
+      }
+    })(exports);
+  }
+});
+
+// node_modules/url/util.js
+var require_util = __commonJS({
+  "node_modules/url/util.js"(exports, module2) {
+    "use strict";
+    module2.exports = {
+      isString: function(arg) {
+        return typeof arg === "string";
+      },
+      isObject: function(arg) {
+        return typeof arg === "object" && arg !== null;
+      },
+      isNull: function(arg) {
+        return arg === null;
+      },
+      isNullOrUndefined: function(arg) {
+        return arg == null;
+      }
+    };
+  }
+});
+
+// node_modules/querystring/decode.js
+var require_decode = __commonJS({
+  "node_modules/querystring/decode.js"(exports, module2) {
+    "use strict";
+    function hasOwnProperty(obj, prop) {
+      return Object.prototype.hasOwnProperty.call(obj, prop);
+    }
+    module2.exports = function(qs, sep, eq, options) {
+      sep = sep || "&";
+      eq = eq || "=";
+      var obj = {};
+      if (typeof qs !== "string" || qs.length === 0) {
+        return obj;
+      }
+      var regexp = /\+/g;
+      qs = qs.split(sep);
+      var maxKeys = 1e3;
+      if (options && typeof options.maxKeys === "number") {
+        maxKeys = options.maxKeys;
+      }
+      var len = qs.length;
+      if (maxKeys > 0 && len > maxKeys) {
+        len = maxKeys;
+      }
+      for (var i = 0; i < len; ++i) {
+        var x = qs[i].replace(regexp, "%20"), idx = x.indexOf(eq), kstr, vstr, k, v;
+        if (idx >= 0) {
+          kstr = x.substr(0, idx);
+          vstr = x.substr(idx + 1);
+        } else {
+          kstr = x;
+          vstr = "";
+        }
+        k = decodeURIComponent(kstr);
+        v = decodeURIComponent(vstr);
+        if (!hasOwnProperty(obj, k)) {
+          obj[k] = v;
+        } else if (Array.isArray(obj[k])) {
+          obj[k].push(v);
+        } else {
+          obj[k] = [obj[k], v];
+        }
+      }
+      return obj;
+    };
+  }
+});
+
+// node_modules/querystring/encode.js
+var require_encode = __commonJS({
+  "node_modules/querystring/encode.js"(exports, module2) {
+    "use strict";
+    var stringifyPrimitive = function(v) {
+      switch (typeof v) {
+        case "string":
+          return v;
+        case "boolean":
+          return v ? "true" : "false";
+        case "number":
+          return isFinite(v) ? v : "";
+        default:
+          return "";
+      }
+    };
+    module2.exports = function(obj, sep, eq, name) {
+      sep = sep || "&";
+      eq = eq || "=";
+      if (obj === null) {
+        obj = void 0;
+      }
+      if (typeof obj === "object") {
+        return Object.keys(obj).map(function(k) {
+          var ks = encodeURIComponent(stringifyPrimitive(k)) + eq;
+          if (Array.isArray(obj[k])) {
+            return obj[k].map(function(v) {
+              return ks + encodeURIComponent(stringifyPrimitive(v));
+            }).join(sep);
+          } else {
+            return ks + encodeURIComponent(stringifyPrimitive(obj[k]));
+          }
+        }).join(sep);
+      }
+      if (!name)
+        return "";
+      return encodeURIComponent(stringifyPrimitive(name)) + eq + encodeURIComponent(stringifyPrimitive(obj));
+    };
+  }
+});
+
+// node_modules/querystring/index.js
+var require_querystring = __commonJS({
+  "node_modules/querystring/index.js"(exports) {
+    "use strict";
+    exports.decode = exports.parse = require_decode();
+    exports.encode = exports.stringify = require_encode();
+  }
+});
+
+// node_modules/url/url.js
+var require_url = __commonJS({
+  "node_modules/url/url.js"(exports) {
+    "use strict";
+    var punycode = require_punycode();
+    var util = require_util();
+    exports.parse = urlParse;
+    exports.resolve = urlResolve;
+    exports.resolveObject = urlResolveObject;
+    exports.format = urlFormat;
+    exports.Url = Url;
+    function Url() {
+      this.protocol = null;
+      this.slashes = null;
+      this.auth = null;
+      this.host = null;
+      this.port = null;
+      this.hostname = null;
+      this.hash = null;
+      this.search = null;
+      this.query = null;
+      this.pathname = null;
+      this.path = null;
+      this.href = null;
+    }
+    var protocolPattern = /^([a-z0-9.+-]+:)/i;
+    var portPattern = /:[0-9]*$/;
+    var simplePathPattern = /^(\/\/?(?!\/)[^\?\s]*)(\?[^\s]*)?$/;
+    var delims = ["<", ">", '"', "`", " ", "\r", "\n", "	"];
+    var unwise = ["{", "}", "|", "\\", "^", "`"].concat(delims);
+    var autoEscape = ["'"].concat(unwise);
+    var nonHostChars = ["%", "/", "?", ";", "#"].concat(autoEscape);
+    var hostEndingChars = ["/", "?", "#"];
+    var hostnameMaxLen = 255;
+    var hostnamePartPattern = /^[+a-z0-9A-Z_-]{0,63}$/;
+    var hostnamePartStart = /^([+a-z0-9A-Z_-]{0,63})(.*)$/;
+    var unsafeProtocol = {
+      "javascript": true,
+      "javascript:": true
+    };
+    var hostlessProtocol = {
+      "javascript": true,
+      "javascript:": true
+    };
+    var slashedProtocol = {
+      "http": true,
+      "https": true,
+      "ftp": true,
+      "gopher": true,
+      "file": true,
+      "http:": true,
+      "https:": true,
+      "ftp:": true,
+      "gopher:": true,
+      "file:": true
+    };
+    var querystring = require_querystring();
+    function urlParse(url, parseQueryString, slashesDenoteHost) {
+      if (url && util.isObject(url) && url instanceof Url)
+        return url;
+      var u = new Url();
+      u.parse(url, parseQueryString, slashesDenoteHost);
+      return u;
+    }
+    Url.prototype.parse = function(url, parseQueryString, slashesDenoteHost) {
+      if (!util.isString(url)) {
+        throw new TypeError("Parameter 'url' must be a string, not " + typeof url);
+      }
+      var queryIndex = url.indexOf("?"), splitter = queryIndex !== -1 && queryIndex < url.indexOf("#") ? "?" : "#", uSplit = url.split(splitter), slashRegex = /\\/g;
+      uSplit[0] = uSplit[0].replace(slashRegex, "/");
+      url = uSplit.join(splitter);
+      var rest = url;
+      rest = rest.trim();
+      if (!slashesDenoteHost && url.split("#").length === 1) {
+        var simplePath = simplePathPattern.exec(rest);
+        if (simplePath) {
+          this.path = rest;
+          this.href = rest;
+          this.pathname = simplePath[1];
+          if (simplePath[2]) {
+            this.search = simplePath[2];
+            if (parseQueryString) {
+              this.query = querystring.parse(this.search.substr(1));
+            } else {
+              this.query = this.search.substr(1);
+            }
+          } else if (parseQueryString) {
+            this.search = "";
+            this.query = {};
+          }
+          return this;
+        }
+      }
+      var proto = protocolPattern.exec(rest);
+      if (proto) {
+        proto = proto[0];
+        var lowerProto = proto.toLowerCase();
+        this.protocol = lowerProto;
+        rest = rest.substr(proto.length);
+      }
+      if (slashesDenoteHost || proto || rest.match(/^\/\/[^@\/]+@[^@\/]+/)) {
+        var slashes = rest.substr(0, 2) === "//";
+        if (slashes && !(proto && hostlessProtocol[proto])) {
+          rest = rest.substr(2);
+          this.slashes = true;
+        }
+      }
+      if (!hostlessProtocol[proto] && (slashes || proto && !slashedProtocol[proto])) {
+        var hostEnd = -1;
+        for (var i = 0; i < hostEndingChars.length; i++) {
+          var hec = rest.indexOf(hostEndingChars[i]);
+          if (hec !== -1 && (hostEnd === -1 || hec < hostEnd))
+            hostEnd = hec;
+        }
+        var auth, atSign;
+        if (hostEnd === -1) {
+          atSign = rest.lastIndexOf("@");
+        } else {
+          atSign = rest.lastIndexOf("@", hostEnd);
+        }
+        if (atSign !== -1) {
+          auth = rest.slice(0, atSign);
+          rest = rest.slice(atSign + 1);
+          this.auth = decodeURIComponent(auth);
+        }
+        hostEnd = -1;
+        for (var i = 0; i < nonHostChars.length; i++) {
+          var hec = rest.indexOf(nonHostChars[i]);
+          if (hec !== -1 && (hostEnd === -1 || hec < hostEnd))
+            hostEnd = hec;
+        }
+        if (hostEnd === -1)
+          hostEnd = rest.length;
+        this.host = rest.slice(0, hostEnd);
+        rest = rest.slice(hostEnd);
+        this.parseHost();
+        this.hostname = this.hostname || "";
+        var ipv6Hostname = this.hostname[0] === "[" && this.hostname[this.hostname.length - 1] === "]";
+        if (!ipv6Hostname) {
+          var hostparts = this.hostname.split(/\./);
+          for (var i = 0, l = hostparts.length; i < l; i++) {
+            var part = hostparts[i];
+            if (!part)
+              continue;
+            if (!part.match(hostnamePartPattern)) {
+              var newpart = "";
+              for (var j = 0, k = part.length; j < k; j++) {
+                if (part.charCodeAt(j) > 127) {
+                  newpart += "x";
+                } else {
+                  newpart += part[j];
+                }
+              }
+              if (!newpart.match(hostnamePartPattern)) {
+                var validParts = hostparts.slice(0, i);
+                var notHost = hostparts.slice(i + 1);
+                var bit = part.match(hostnamePartStart);
+                if (bit) {
+                  validParts.push(bit[1]);
+                  notHost.unshift(bit[2]);
+                }
+                if (notHost.length) {
+                  rest = "/" + notHost.join(".") + rest;
+                }
+                this.hostname = validParts.join(".");
+                break;
+              }
+            }
+          }
+        }
+        if (this.hostname.length > hostnameMaxLen) {
+          this.hostname = "";
+        } else {
+          this.hostname = this.hostname.toLowerCase();
+        }
+        if (!ipv6Hostname) {
+          this.hostname = punycode.toASCII(this.hostname);
+        }
+        var p = this.port ? ":" + this.port : "";
+        var h = this.hostname || "";
+        this.host = h + p;
+        this.href += this.host;
+        if (ipv6Hostname) {
+          this.hostname = this.hostname.substr(1, this.hostname.length - 2);
+          if (rest[0] !== "/") {
+            rest = "/" + rest;
+          }
+        }
+      }
+      if (!unsafeProtocol[lowerProto]) {
+        for (var i = 0, l = autoEscape.length; i < l; i++) {
+          var ae = autoEscape[i];
+          if (rest.indexOf(ae) === -1)
+            continue;
+          var esc = encodeURIComponent(ae);
+          if (esc === ae) {
+            esc = escape(ae);
+          }
+          rest = rest.split(ae).join(esc);
+        }
+      }
+      var hash = rest.indexOf("#");
+      if (hash !== -1) {
+        this.hash = rest.substr(hash);
+        rest = rest.slice(0, hash);
+      }
+      var qm = rest.indexOf("?");
+      if (qm !== -1) {
+        this.search = rest.substr(qm);
+        this.query = rest.substr(qm + 1);
+        if (parseQueryString) {
+          this.query = querystring.parse(this.query);
+        }
+        rest = rest.slice(0, qm);
+      } else if (parseQueryString) {
+        this.search = "";
+        this.query = {};
+      }
+      if (rest)
+        this.pathname = rest;
+      if (slashedProtocol[lowerProto] && this.hostname && !this.pathname) {
+        this.pathname = "/";
+      }
+      if (this.pathname || this.search) {
+        var p = this.pathname || "";
+        var s = this.search || "";
+        this.path = p + s;
+      }
+      this.href = this.format();
+      return this;
+    };
+    function urlFormat(obj) {
+      if (util.isString(obj))
+        obj = urlParse(obj);
+      if (!(obj instanceof Url))
+        return Url.prototype.format.call(obj);
+      return obj.format();
+    }
+    Url.prototype.format = function() {
+      var auth = this.auth || "";
+      if (auth) {
+        auth = encodeURIComponent(auth);
+        auth = auth.replace(/%3A/i, ":");
+        auth += "@";
+      }
+      var protocol = this.protocol || "", pathname = this.pathname || "", hash = this.hash || "", host = false, query = "";
+      if (this.host) {
+        host = auth + this.host;
+      } else if (this.hostname) {
+        host = auth + (this.hostname.indexOf(":") === -1 ? this.hostname : "[" + this.hostname + "]");
+        if (this.port) {
+          host += ":" + this.port;
+        }
+      }
+      if (this.query && util.isObject(this.query) && Object.keys(this.query).length) {
+        query = querystring.stringify(this.query);
+      }
+      var search = this.search || query && "?" + query || "";
+      if (protocol && protocol.substr(-1) !== ":")
+        protocol += ":";
+      if (this.slashes || (!protocol || slashedProtocol[protocol]) && host !== false) {
+        host = "//" + (host || "");
+        if (pathname && pathname.charAt(0) !== "/")
+          pathname = "/" + pathname;
+      } else if (!host) {
+        host = "";
+      }
+      if (hash && hash.charAt(0) !== "#")
+        hash = "#" + hash;
+      if (search && search.charAt(0) !== "?")
+        search = "?" + search;
+      pathname = pathname.replace(/[?#]/g, function(match) {
+        return encodeURIComponent(match);
+      });
+      search = search.replace("#", "%23");
+      return protocol + host + pathname + search + hash;
+    };
+    function urlResolve(source, relative) {
+      return urlParse(source, false, true).resolve(relative);
+    }
+    Url.prototype.resolve = function(relative) {
+      return this.resolveObject(urlParse(relative, false, true)).format();
+    };
+    function urlResolveObject(source, relative) {
+      if (!source)
+        return relative;
+      return urlParse(source, false, true).resolveObject(relative);
+    }
+    Url.prototype.resolveObject = function(relative) {
+      if (util.isString(relative)) {
+        var rel = new Url();
+        rel.parse(relative, false, true);
+        relative = rel;
+      }
+      var result = new Url();
+      var tkeys = Object.keys(this);
+      for (var tk = 0; tk < tkeys.length; tk++) {
+        var tkey = tkeys[tk];
+        result[tkey] = this[tkey];
+      }
+      result.hash = relative.hash;
+      if (relative.href === "") {
+        result.href = result.format();
+        return result;
+      }
+      if (relative.slashes && !relative.protocol) {
+        var rkeys = Object.keys(relative);
+        for (var rk = 0; rk < rkeys.length; rk++) {
+          var rkey = rkeys[rk];
+          if (rkey !== "protocol")
+            result[rkey] = relative[rkey];
+        }
+        if (slashedProtocol[result.protocol] && result.hostname && !result.pathname) {
+          result.path = result.pathname = "/";
+        }
+        result.href = result.format();
+        return result;
+      }
+      if (relative.protocol && relative.protocol !== result.protocol) {
+        if (!slashedProtocol[relative.protocol]) {
+          var keys = Object.keys(relative);
+          for (var v = 0; v < keys.length; v++) {
+            var k = keys[v];
+            result[k] = relative[k];
+          }
+          result.href = result.format();
+          return result;
+        }
+        result.protocol = relative.protocol;
+        if (!relative.host && !hostlessProtocol[relative.protocol]) {
+          var relPath = (relative.pathname || "").split("/");
+          while (relPath.length && !(relative.host = relPath.shift()))
+            ;
+          if (!relative.host)
+            relative.host = "";
+          if (!relative.hostname)
+            relative.hostname = "";
+          if (relPath[0] !== "")
+            relPath.unshift("");
+          if (relPath.length < 2)
+            relPath.unshift("");
+          result.pathname = relPath.join("/");
+        } else {
+          result.pathname = relative.pathname;
+        }
+        result.search = relative.search;
+        result.query = relative.query;
+        result.host = relative.host || "";
+        result.auth = relative.auth;
+        result.hostname = relative.hostname || relative.host;
+        result.port = relative.port;
+        if (result.pathname || result.search) {
+          var p = result.pathname || "";
+          var s = result.search || "";
+          result.path = p + s;
+        }
+        result.slashes = result.slashes || relative.slashes;
+        result.href = result.format();
+        return result;
+      }
+      var isSourceAbs = result.pathname && result.pathname.charAt(0) === "/", isRelAbs = relative.host || relative.pathname && relative.pathname.charAt(0) === "/", mustEndAbs = isRelAbs || isSourceAbs || result.host && relative.pathname, removeAllDots = mustEndAbs, srcPath = result.pathname && result.pathname.split("/") || [], relPath = relative.pathname && relative.pathname.split("/") || [], psychotic = result.protocol && !slashedProtocol[result.protocol];
+      if (psychotic) {
+        result.hostname = "";
+        result.port = null;
+        if (result.host) {
+          if (srcPath[0] === "")
+            srcPath[0] = result.host;
+          else
+            srcPath.unshift(result.host);
+        }
+        result.host = "";
+        if (relative.protocol) {
+          relative.hostname = null;
+          relative.port = null;
+          if (relative.host) {
+            if (relPath[0] === "")
+              relPath[0] = relative.host;
+            else
+              relPath.unshift(relative.host);
+          }
+          relative.host = null;
+        }
+        mustEndAbs = mustEndAbs && (relPath[0] === "" || srcPath[0] === "");
+      }
+      if (isRelAbs) {
+        result.host = relative.host || relative.host === "" ? relative.host : result.host;
+        result.hostname = relative.hostname || relative.hostname === "" ? relative.hostname : result.hostname;
+        result.search = relative.search;
+        result.query = relative.query;
+        srcPath = relPath;
+      } else if (relPath.length) {
+        if (!srcPath)
+          srcPath = [];
+        srcPath.pop();
+        srcPath = srcPath.concat(relPath);
+        result.search = relative.search;
+        result.query = relative.query;
+      } else if (!util.isNullOrUndefined(relative.search)) {
+        if (psychotic) {
+          result.hostname = result.host = srcPath.shift();
+          var authInHost = result.host && result.host.indexOf("@") > 0 ? result.host.split("@") : false;
+          if (authInHost) {
+            result.auth = authInHost.shift();
+            result.host = result.hostname = authInHost.shift();
+          }
+        }
+        result.search = relative.search;
+        result.query = relative.query;
+        if (!util.isNull(result.pathname) || !util.isNull(result.search)) {
+          result.path = (result.pathname ? result.pathname : "") + (result.search ? result.search : "");
+        }
+        result.href = result.format();
+        return result;
+      }
+      if (!srcPath.length) {
+        result.pathname = null;
+        if (result.search) {
+          result.path = "/" + result.search;
+        } else {
+          result.path = null;
+        }
+        result.href = result.format();
+        return result;
+      }
+      var last = srcPath.slice(-1)[0];
+      var hasTrailingSlash = (result.host || relative.host || srcPath.length > 1) && (last === "." || last === "..") || last === "";
+      var up = 0;
+      for (var i = srcPath.length; i >= 0; i--) {
+        last = srcPath[i];
+        if (last === ".") {
+          srcPath.splice(i, 1);
+        } else if (last === "..") {
+          srcPath.splice(i, 1);
+          up++;
+        } else if (up) {
+          srcPath.splice(i, 1);
+          up--;
+        }
+      }
+      if (!mustEndAbs && !removeAllDots) {
+        for (; up--; up) {
+          srcPath.unshift("..");
+        }
+      }
+      if (mustEndAbs && srcPath[0] !== "" && (!srcPath[0] || srcPath[0].charAt(0) !== "/")) {
+        srcPath.unshift("");
+      }
+      if (hasTrailingSlash && srcPath.join("/").substr(-1) !== "/") {
+        srcPath.push("");
+      }
+      var isAbsolute = srcPath[0] === "" || srcPath[0] && srcPath[0].charAt(0) === "/";
+      if (psychotic) {
+        result.hostname = result.host = isAbsolute ? "" : srcPath.length ? srcPath.shift() : "";
+        var authInHost = result.host && result.host.indexOf("@") > 0 ? result.host.split("@") : false;
+        if (authInHost) {
+          result.auth = authInHost.shift();
+          result.host = result.hostname = authInHost.shift();
+        }
+      }
+      mustEndAbs = mustEndAbs || result.host && srcPath.length;
+      if (mustEndAbs && !isAbsolute) {
+        srcPath.unshift("");
+      }
+      if (!srcPath.length) {
+        result.pathname = null;
+        result.path = null;
+      } else {
+        result.pathname = srcPath.join("/");
+      }
+      if (!util.isNull(result.pathname) || !util.isNull(result.search)) {
+        result.path = (result.pathname ? result.pathname : "") + (result.search ? result.search : "");
+      }
+      result.auth = relative.auth || result.auth;
+      result.slashes = result.slashes || relative.slashes;
+      result.href = result.format();
+      return result;
+    };
+    Url.prototype.parseHost = function() {
+      var host = this.host;
+      var port = portPattern.exec(host);
+      if (port) {
+        port = port[0];
+        if (port !== ":") {
+          this.port = port.substr(1);
+        }
+        host = host.substr(0, host.length - port.length);
+      }
+      if (host)
+        this.hostname = host;
+    };
   }
 });
 
@@ -285,8 +1469,8 @@ var require_debugSession = __commonJS({
     exports.DebugSession = exports.ErrorDestination = exports.MemoryEvent = exports.InvalidatedEvent = exports.ProgressEndEvent = exports.ProgressUpdateEvent = exports.ProgressStartEvent = exports.CapabilitiesEvent = exports.LoadedSourceEvent = exports.ModuleEvent = exports.BreakpointEvent = exports.ThreadEvent = exports.OutputEvent = exports.ExitedEvent = exports.TerminatedEvent = exports.InitializedEvent = exports.ContinuedEvent = exports.StoppedEvent = exports.CompletionItem = exports.Module = exports.Breakpoint = exports.Variable = exports.Thread = exports.StackFrame = exports.Scope = exports.Source = void 0;
     var protocol_1 = require_protocol();
     var messages_1 = require_messages();
-    var runDebugAdapter_1 = require_runDebugAdapter();
-    var url_1 = require("url");
+    var runDebugAdapter_1 = require_runDebugAdapterStub();
+    var url_1 = require_url();
     var Source2 = class {
       constructor(name, path, id = 0, origin, data) {
         this.name = name;
@@ -974,134 +2158,23 @@ var require_debugSession = __commonJS({
   }
 });
 
-// node_modules/@vscode/debugadapter/lib/internalLogger.js
-var require_internalLogger = __commonJS({
-  "node_modules/@vscode/debugadapter/lib/internalLogger.js"(exports) {
+// node_modules/@vscode/debugadapter/lib/web/internalLoggerStub.js
+var require_internalLoggerStub = __commonJS({
+  "node_modules/@vscode/debugadapter/lib/web/internalLoggerStub.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.InternalLogger = void 0;
-    var fs = require("fs");
-    var path = require("path");
-    var logger_1 = require_logger();
     var InternalLogger = class {
-      constructor(logCallback, isServer) {
-        this.beforeExitCallback = () => this.dispose();
-        this._logCallback = logCallback;
-        this._logToConsole = isServer;
-        this._minLogLevel = logger_1.LogLevel.Warn;
-        this.disposeCallback = (signal, code) => {
-          this.dispose();
-          code = code || 2;
-          code += 128;
-          process.exit(code);
-        };
-      }
-      async setup(options) {
-        this._minLogLevel = options.consoleMinLogLevel;
-        this._prependTimestamp = options.prependTimestamp;
-        if (options.logFilePath) {
-          if (!path.isAbsolute(options.logFilePath)) {
-            this.log(`logFilePath must be an absolute path: ${options.logFilePath}`, logger_1.LogLevel.Error);
-          } else {
-            const handleError = (err) => this.sendLog(`Error creating log file at path: ${options.logFilePath}. Error: ${err.toString()}
-`, logger_1.LogLevel.Error);
-            try {
-              await fs.promises.mkdir(path.dirname(options.logFilePath), { recursive: true });
-              this.log(`Verbose logs are written to:
-`, logger_1.LogLevel.Warn);
-              this.log(options.logFilePath + "\n", logger_1.LogLevel.Warn);
-              this._logFileStream = fs.createWriteStream(options.logFilePath);
-              this.logDateTime();
-              this.setupShutdownListeners();
-              this._logFileStream.on("error", (err) => {
-                handleError(err);
-              });
-            } catch (err) {
-              handleError(err);
-            }
-          }
-        }
-      }
-      logDateTime() {
-        let d = new Date();
-        let dateString = d.getUTCFullYear() + `-${d.getUTCMonth() + 1}-` + d.getUTCDate();
-        const timeAndDateStamp = dateString + ", " + getFormattedTimeString();
-        this.log(timeAndDateStamp + "\n", logger_1.LogLevel.Verbose, false);
-      }
-      setupShutdownListeners() {
-        process.on("beforeExit", this.beforeExitCallback);
-        process.on("SIGTERM", this.disposeCallback);
-        process.on("SIGINT", this.disposeCallback);
-      }
-      removeShutdownListeners() {
-        process.removeListener("beforeExit", this.beforeExitCallback);
-        process.removeListener("SIGTERM", this.disposeCallback);
-        process.removeListener("SIGINT", this.disposeCallback);
-      }
       dispose() {
-        return new Promise((resolve) => {
-          this.removeShutdownListeners();
-          if (this._logFileStream) {
-            this._logFileStream.end(resolve);
-            this._logFileStream = null;
-          } else {
-            resolve();
-          }
-        });
+        return void 0;
       }
-      log(msg, level, prependTimestamp = true) {
-        if (this._minLogLevel === logger_1.LogLevel.Stop) {
-          return;
-        }
-        if (level >= this._minLogLevel) {
-          this.sendLog(msg, level);
-        }
-        if (this._logToConsole) {
-          const logFn = level === logger_1.LogLevel.Error ? console.error : level === logger_1.LogLevel.Warn ? console.warn : null;
-          if (logFn) {
-            logFn((0, logger_1.trimLastNewline)(msg));
-          }
-        }
-        if (level === logger_1.LogLevel.Error) {
-          msg = `[${logger_1.LogLevel[level]}] ${msg}`;
-        }
-        if (this._prependTimestamp && prependTimestamp) {
-          msg = "[" + getFormattedTimeString() + "] " + msg;
-        }
-        if (this._logFileStream) {
-          this._logFileStream.write(msg);
-        }
+      log(msg, level, prependTimestamp) {
       }
-      sendLog(msg, level) {
-        if (msg.length > 1500) {
-          const endsInNewline = !!msg.match(/(\n|\r\n)$/);
-          msg = msg.substr(0, 1500) + "[...]";
-          if (endsInNewline) {
-            msg = msg + "\n";
-          }
-        }
-        if (this._logCallback) {
-          const event = new logger_1.LogOutputEvent(msg, level);
-          this._logCallback(event);
-        }
+      setup(options) {
+        return void 0;
       }
     };
     exports.InternalLogger = InternalLogger;
-    function getFormattedTimeString() {
-      let d = new Date();
-      let hourString = _padZeroes(2, String(d.getUTCHours()));
-      let minuteString = _padZeroes(2, String(d.getUTCMinutes()));
-      let secondString = _padZeroes(2, String(d.getUTCSeconds()));
-      let millisecondString = _padZeroes(3, String(d.getUTCMilliseconds()));
-      return hourString + ":" + minuteString + ":" + secondString + "." + millisecondString + " UTC";
-    }
-    function _padZeroes(minDesiredLength, numberToPad) {
-      if (numberToPad.length >= minDesiredLength) {
-        return numberToPad;
-      } else {
-        return String("0".repeat(minDesiredLength) + numberToPad).slice(-minDesiredLength);
-      }
-    }
   }
 });
 
@@ -1111,7 +2184,7 @@ var require_logger = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.trimLastNewline = exports.LogOutputEvent = exports.logger = exports.Logger = exports.LogLevel = void 0;
-    var internalLogger_1 = require_internalLogger();
+    var internalLogger_1 = require_internalLoggerStub();
     var debugSession_1 = require_debugSession();
     var LogLevel;
     (function(LogLevel2) {
@@ -1515,7 +2588,7 @@ var require_path_browserify = __commonJS({
         assertPath(path);
         return path.length > 0 && path.charCodeAt(0) === 47;
       },
-      join: function join2() {
+      join: function join() {
         if (arguments.length === 0)
           return ".";
         var joined;
@@ -1954,26 +3027,23 @@ var require_base64_js = __commonJS({
   }
 });
 
-// src/extension.ts
-var extension_exports = {};
-__export(extension_exports, {
+// src/web-extension.ts
+var web_extension_exports = {};
+__export(web_extension_exports, {
   activate: () => activate,
   deactivate: () => deactivate
 });
-module.exports = __toCommonJS(extension_exports);
-var Net = __toESM(require("net"));
-var vscode2 = __toESM(require("vscode"));
-var import_crypto = require("crypto");
-var import_os = require("os");
-var import_path = require("path");
-var import_process = require("process");
+module.exports = __toCommonJS(web_extension_exports);
+
+// src/activateMockDebug.ts
+var vscode = __toESM(require("vscode"));
 
 // src/mockDebug.ts
 var import_debugadapter = __toESM(require_main());
 var import_path_browserify = __toESM(require_path_browserify());
 
 // src/mockRuntime.ts
-var import_events = require("events");
+var import_events = __toESM(require_events());
 var RuntimeVariable = class {
   constructor(name, _value) {
     this.name = name;
@@ -2765,7 +3835,6 @@ var _MockDebugSession = class extends import_debugadapter.LoggingDebugSession {
     response.body = {
       targets: targets.map((t) => {
         return { id: t.id, label: t.label };
-        
       })
     };
     this.sendResponse(response);
@@ -3093,7 +4162,6 @@ var MockDebugSession = _MockDebugSession;
 MockDebugSession.threadID = 1;
 
 // src/activateMockDebug.ts
-var vscode = __toESM(require("vscode"));
 function activateMockDebug(context, factory) {
   context.subscriptions.push(vscode.commands.registerCommand("extension.mock-debug.runEditorContents", (resource) => {
     let targetResource = resource;
@@ -3248,131 +4316,11 @@ var InlineDebugAdapterFactory = class {
   }
 };
 
-// src/extension.ts
-var runMode = "inline";
-var extPy;
-async function activate(context) {
-  extPy = vscode2.extensions.getExtension("ms-python.python");
-  if (!extPy) {
-    vscode2.window.showErrorMessage("You must have the official Python extension to use this debugger!");
-    return;
-  }
-  if (!extPy.isActive) {
-    await extPy.activate();
-  }
-  let currentPanel = vscode2.WebviewPanel;
-  context.subscriptions.push(vscode2.commands.registerCommand("preview.start", () => {
-    if (currentPanel) {
-      currentPanel.reveal(vscode2.ViewColumn.Two);
-    } else {
-      currentPanel = vscode2.window.createWebviewPanel("preview", "Preview", vscode2.ViewColumn.Two, {
-        enableScripts: true
-      });
-      currentPanel.webview.html = getWebviewContent();
-      currentPanel.onDidDispose(() => {
-        currentPanel = void 0;
-      }, null, context.subscriptions);
-    }
-  }));
-  function getWebviewContent() {
-    return `<!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Cat Coding</title>
-    </head>
-    <body>
-        <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" width="300" />
-        <h1 id="lines-of-code-counter">0</h1>
-    
-        <script>
-            const counter = document.getElementById('lines-of-code-counter');
-    
-            let count = 0;
-            setInterval(() => {
-                counter.textContent = count++;
-            }, 100);
-        <\/script>
-    </body>
-    </html>`;
-  }
-  vscode2.commands.executeCommand("preview.start");
-  switch (runMode) {
-    case "server":
-      activateMockDebug(context, new MockDebugAdapterServerDescriptorFactory());
-      break;
-    case "namedPipeServer":
-      activateMockDebug(context, new MockDebugAdapterNamedPipeServerDescriptorFactory());
-      break;
-    case "external":
-    default:
-      activateMockDebug(context, new DebugAdapterExecutableFactory());
-      break;
-    case "inline":
-      activateMockDebug(context);
-      break;
-  }
+// src/web-extension.ts
+function activate(context) {
+  activateMockDebug(context);
 }
 function deactivate() {
 }
-var DebugAdapterExecutableFactory = class {
-  createDebugAdapterDescriptor(_session, executable) {
-    if (!executable) {
-      const command = "absolute path to my DA executable";
-      const args = [
-        "some args",
-        "another arg"
-      ];
-      const options = {
-        cwd: "working directory for executable",
-        env: { "envVariable": "some value" }
-      };
-      executable = new vscode2.DebugAdapterExecutable(command, args, options);
-    }
-    return executable;
-  }
-};
-var MockDebugAdapterServerDescriptorFactory = class {
-  createDebugAdapterDescriptor(session, executable) {
-    if (!this.server) {
-      this.server = Net.createServer((socket) => {
-        const session2 = new MockDebugSession(workspaceFileAccessor);
-        session2.setRunAsServer(true);
-        session2.start(socket, socket);
-      }).listen(0);
-    }
-    return new vscode2.DebugAdapterServer(this.server.address().port);
-  }
-  dispose() {
-    if (this.server) {
-      this.server.close();
-    }
-  }
-};
-var MockDebugAdapterNamedPipeServerDescriptorFactory = class {
-  createDebugAdapterDescriptor(session, executable) {
-    if (!this.server) {
-      const pipeName = (0, import_crypto.randomBytes)(10).toString("utf8");
-      const pipePath = import_process.platform === "win32" ? (0, import_path.join)("\\\\.\\pipe\\", pipeName) : (0, import_path.join)((0, import_os.tmpdir)(), pipeName);
-      this.server = Net.createServer((socket) => {
-        const session2 = new MockDebugSession(workspaceFileAccessor);
-        session2.setRunAsServer(true);
-        session2.start(socket, socket);
-      }).listen(pipePath);
-    }
-    return new vscode2.DebugAdapterNamedPipeServer(this.server.address());
-  }
-  dispose() {
-    if (this.server) {
-      this.server.close();
-    }
-  }
-};
-"use strict";
-// Annotate the CommonJS export names for ESM import in node:
-0 && (module.exports = {
-  activate,
-  deactivate
-});
-//# sourceMappingURL=extension.js.map
+/*! https://mths.be/punycode v1.3.2 by @mathias */
+//# sourceMappingURL=web-extension.js.map
