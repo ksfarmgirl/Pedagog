@@ -7,26 +7,27 @@
 		{
 			"type": "mock",
 			"request": "launch",
-			"name": "Debug readme.md",
-			"program": "${workspaceFolder}/readme.md",
+			"name": "Debug test.py",
+			"program": "${workspaceFolder}/test.py",
 			"stopOnEntry": true,
 			"trace": false
 		},
 		{
 			"type": "mock",
 			"request": "attach",
-			"name": "Attach readme.md",
-			"program": "${workspaceFolder}/readme.md",
+			"name": "Attach test.py",
+			"program": "${workspaceFolder}/test.py",
 			"stopOnEntry": true,
 			"trace": false
 		},
 		{
-			"name": "Python: Current File",
+			"name": "Python Extension",
 			"type": "python",
 			"request": "launch",
-			"program": "${file}",
+			"program": "${workspaceFolder}/test.py",
+			"stopOnEntry": true,
 			"console": "integratedTerminal",
-			"justMyCode": true
+			"justMyCode": false
 		}
 	]
 }
