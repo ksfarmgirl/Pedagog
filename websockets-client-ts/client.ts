@@ -8,6 +8,7 @@
  ***********************************************/
 import WebSocket from "ws";
 
+
 //port used by server
 const port = 8000;
 
@@ -24,3 +25,15 @@ ws.on('open', () => {
 ws.on('message', (data) => {
     console.log(`Received a message from the server: ${data}`);
 });
+
+let activeClients = new Array(1);
+let numClients = 0;
+
+class Client { 
+    clientID = 0;
+
+    newConnection() {
+        this.clientID = activeClients.length;
+        activeClients.push(client)
+    }
+}
