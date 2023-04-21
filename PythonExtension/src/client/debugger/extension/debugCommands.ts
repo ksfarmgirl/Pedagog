@@ -3,7 +3,7 @@
 
 import * as path from 'path';
 import { inject, injectable } from 'inversify';
-import { DebugConfiguration, Uri } from 'vscode';
+import { DebugConfiguration, Uri, vscode } from 'vscode';
 import { IExtensionSingleActivationService } from '../../activation/types';
 import { ICommandManager, IDebugService } from '../../common/application/types';
 import { Commands } from '../../common/constants';
@@ -14,6 +14,7 @@ import { DebugPurpose, LaunchRequestArguments } from '../types';
 import { IInterpreterService } from '../../interpreter/contracts';
 import { noop } from '../../common/utils/misc';
 import { getConfigurationsByUri } from './configuration/launch.json/launchJsonReader';
+import { promises } from 'fs';
 
 @injectable()
 export class DebugCommands implements IExtensionSingleActivationService {

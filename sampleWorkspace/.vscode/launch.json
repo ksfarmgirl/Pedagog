@@ -28,6 +28,13 @@
 			"stopOnEntry": true,
 			"console": "integratedTerminal",
 			"justMyCode": false
-		}
+		},
+		{
+            "name": "Listen",
+            "type": "python",
+            "request": "attach",
+            "listen": { "host": "localhost", "port": 5678 },
+            "justMyCode": true
+        }
 	]
 }

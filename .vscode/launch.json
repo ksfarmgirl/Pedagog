@@ -90,7 +90,14 @@
 			"program": "${file}",
 			"console": "integratedTerminal",
 			"justMyCode": true
-		}
+		},
+		 {
+            "name": "Listen",
+            "type": "python",
+            "request": "attach",
+            "listen": { "host": "localhost", "port": 5678 },
+            "justMyCode": true
+        }
 	],
 	"compounds": [
 		{

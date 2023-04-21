@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 'use strict';
+import { vscode } from 'vscode';
 import { Uri } from 'vscode';
 import { inject, injectable } from 'inversify';
 import { IExtensionSingleActivationService } from '../../../activation/types';

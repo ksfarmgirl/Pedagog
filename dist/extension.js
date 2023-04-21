@@ -3270,94 +3270,101 @@ var InlineDebugAdapterFactory = class {
 
 // The activate function is the only edited area in this code
 
-//Python extension check variable
-let extPy;
-
 // src/extension.ts
 var runMode = "inline";
 async function activate(context) {
 
-  //Set python extension 
-	extPy = vscode.extensions.getExtension("ms-python.python");
-
-	//Check for python extension 
-	if(!extPy){
-		vscode.window.showErrorMessage("You must have the official Python extension to use this debugger!");
-		return;
-	}
-  if(!extPy.isActive){
-		await extPy.activate();
-	}
-
   // Track currently webview panel
+  let currentPanel = vscode.WebviewPanel;
   // let currentPanel = undefined;
   // ^^^ simplified from below line of commented code
-  let currentPanel = vscode.WebviewPanel;
-
   context.subscriptions.push(
     vscode.commands.registerCommand('preview.start', () => {
+      currentPanel = vscode.window.createWebviewPanel(
+        'preview',
+        'Preview',
+        vscode.ViewColumn.Two,
+        {
+          enableScripts: true
+        }
+      );
 
-        if (currentPanel) {
-          // If we already have a panel, show it in the target column
-          currentPanel.reveal(vscode.ViewColumn.Two);
-        } else {
-          // Otherwise, create a new panel
-          currentPanel = vscode.window.createWebviewPanel(
-            'preview',
-            'Preview',
-            vscode.ViewColumn.Two,
-            {
-              enableScripts: true
-            }
-          );
-      currentPanel.webview.html = getWebviewContent('Preview');
+      currentPanel.webview.html = getWebviewContent();
 
-       // Reset when the current panel is closed
-       currentPanel.onDidDispose(
-        () => {
-          currentPanel = undefined;
+      // Handle messages from the webview
+      currentPanel.webview.onDidReceiveMessage(
+        message => {
+          switch (message.command) {
+            case 'alert':
+              vscode.window.showErrorMessage(message.text);
+              return;
+          }
         },
-        null,
+        undefined,
         context.subscriptions
       );
-    }
     })
   );
 
-  //This is the code that appears in our Webview
+  // Our new command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('preview.doRefactor', () => {
+      if (!currentPanel) {
+        return;
+      }
+
+      // Send a message to our webview.
+      // You can send any JSON serializable data.
+      currentPanel.webview.postMessage({ command: 'refactor' });
+    })
+  );
+
+  
   function getWebviewContent() {
-    return `<!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Cat Coding</title>
-    </head>
-    <body>
-        <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" width="300" />
-        <h1 id="lines-of-code-counter">0</h1>
-        <p id="thing">This is the best react app you have ever seen!</p>
-    
-        <script>
+  return `<!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preview Window</title>
+  </head>
+  <body>
+    <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" width="300" />
+    <h1 id="lines-of-code-counter">0</h1>
+
+    <script>
+        (function() {
+            const vscode = acquireVsCodeApi();
             const counter = document.getElementById('lines-of-code-counter');
-    
+
             let count = 0;
             setInterval(() => {
                 counter.textContent = count++;
+
+                // Alert the extension when our cat introduces a bug
+                if (Math.random() < 0.001 * count) {
+                    vscode.postMessage({
+                        command: 'alert',
+                        text: '🐛  on line ' + count
+                    })
+                }
             }, 100);
-        </script>
+        }())
+        // Handle the message inside the webview
+        window.addEventListener('message', event => {
 
-        <script>
-        Object.defineProperty(exports, "__esModule", { value: true });
+            const message = event.data; // The JSON data our extension sent
 
-          const thing = document.getElementById('thing');
-
-          setInterval(() => {
-            thing.textContent = PythonEvaluator.start();
-        }, 100);
-        </script>
-    </body>
-    </html>`;
+            switch (message.command) {
+                case 'refactor':
+                    count = Math.ceil(count * 0.5);
+                    counter.textContent = count;
+                    break;
+            }
+          });
+    </script>
+  </body>
+  </html>`;
   }
 
   // Opens preview window on extension startup by using preview.start
